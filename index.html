@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<head lang='en'>
+	<meta charset='utf-8'>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="renderer" content="webkit" />
+	<meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=0" />
+	<title>Luckysheet</title>
+
+	<link rel='stylesheet' href='https://cdn.jsdelivr.net/gh/CodeCyborg/Host/pluginsCss.css' />
+	<link rel='stylesheet' href='https://cdn.jsdelivr.net/gh/CodeCyborg/Host/plugins.css' />
+	<link rel='stylesheet' href='https://cdn.jsdelivr.net/gh/CodeCyborg/Host/luckysheet.css' />
+	<link rel='stylesheet' href='https://cdn.jsdelivr.net/gh/CodeCyborg/Host/iconfont.css' />
+	<script src="https://cdn.jsdelivr.net/gh/CodeCyborg/Host/plugin.js"></script>
+
+	<script src="https://cdn.jsdelivr.net/gh/CodeCyborg/Host/luckysheet.umd.js"></script>
+	<script src="https://cdn.jsdelivr.net/gh/CodeCyborg/Host/luckyexcel.umd.js"></script>
+	
+</head>
+
+	
+	<div id="luckysheet" style="margin:0px;padding:0px;position:absolute;width:100%;height:100%;left: 0px;top: 0px;"></div>
+
+
+	<script>
+		$(function () {
+
+            let options = {
+                container: "luckysheet",
+                //lang: en,
+                //allowUpdate:true,
+                
+            }
+
+			luckysheet.create(options);
+			})
+	</script>
+	<script>
+		 function limcpqExcFileHandler(evt){
+			console.log(evt);
+			let upload = document.getElementById("limcpqExcFile");
+			let files = evt.files;
+			if(files==null || files.length==0){
+				alert("No files wait for import");
+				return;
+			}
+
+			let name = files[0].name;
+			let suffixArr = name.split("."), suffix = suffixArr[suffixArr.length-1];
+			if(suffix!="xlsx"){
+				alert("Currently only supports the import of xlsx files");
+				return;
+			}
+			LuckyExcel.transformExcelToLucky(files[0], function(exportJson, luckysheetfile){
+				
+				if(exportJson.sheets==null || exportJson.sheets.length==0){
+					alert("Failed to read the content of the excel file, currently does not support xls files!");
+					return;
+				}
+				console.log(exportJson, luckysheetfile);
+				window.luckysheet.destroy();
+				
+				window.luckysheet.create({
+					container: 'luckysheet', //luckysheet is the container id
+					showinfobar:false,
+					data:exportJson.sheets,
+					title:exportJson.info.name,
+					userInfo:exportJson.info.name.creator
+				});
+			});
+		}
+	</script>
+<style>
+	/* 自定义loading演示样式 */
+	@keyframes loading-rotate {
+		0% {
+			transform: rotate(0deg);
+		}
+
+		100% {
+			transform: rotate(360deg);
+		}
+	}
+
+	@keyframes loading-dash {
+		0% {
+			stroke-dasharray: 1, 200;
+			stroke-dashoffset: 0;
+		}
+
+		50% {
+			stroke-dasharray: 90, 150;
+			stroke-dashoffset: -40px;
+		}
+
+		100% {
+			stroke-dasharray: 90, 150;
+			stroke-dashoffset: -120px;
+		}
+	}
+
+	.loadingAnimation {
+		width: 3em;
+		height: 3em;
+		animation: loading-rotate 2s linear infinite;
+	}
+
+	.loadingAnimation circle {
+		animation: loading-dash 1.5s ease-in-out infinite;
+		stroke-dasharray: 90, 150;
+		stroke-dashoffset: 0;
+		stroke-width: 2;
+		stroke: currentColor;
+		stroke-linecap: round;
+	}
+</style>
+</body>
+
+</html>
